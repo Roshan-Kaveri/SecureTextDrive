@@ -2,9 +2,6 @@ from flask import  Blueprint , render_template , request , jsonify , redirect , 
 
 views = Blueprint(__name__ , "views")
 
-@views.route("/")
-def home():
-    return render_template("index.html", name="Tim")
 
 
 @views.route("/profile")
@@ -86,3 +83,7 @@ def auth():
             flash('Invalid email or password', 'error')
 
     return render_template('auth.html')           
+
+@views.route('/', methods=['GET', 'POST'])
+def homes():
+      return render_template('home.html');     
