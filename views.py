@@ -6,7 +6,6 @@ import psycopg2
 
 views = Blueprint(__name__ , "views")
 
-
 # Database connection details
 hostname = 'postgresql-ascscs.alwaysdata.net'
 database = 'ascscs_securedrive'
@@ -14,6 +13,7 @@ username = 'ascscs'
 pwd = '@7sdDgVUuhCXjD6'
 port_id = 5432
 
+#signup
 @views.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -94,7 +94,7 @@ def login():
             cur = conn.cursor()
 
             # Check if the email and password match any entry in the database
-            cur.execute('SELECT * FROM USERS WHERE email = %s AND password = %s', (email, password))
+            cur.execute('SELECT email, password, auth FROM USERS WHERE email = %s AND password = %s', (email, password))
             user = cur.fetchone()
 
             cur.close()
@@ -102,24 +102,25 @@ def login():
             print("user = ", user)
 
             if user:
-                # Store email and auth in the session
+                # Store email and auth in session
                 session['email'] = user[0]
-                session['auth'] = user[2]
+                session['auth'] = bool(user[2])  # Convert auth to a boolean
 
-                if user[2]:
-                    flash('Login Successful!', 'success')
-                    gen_otp(user[0])
+                if session['auth']:
+                    flash('Login Successful! OTP sent.', 'success')
+                    gen_otp(user[0])  # Ensure gen_otp is defined correctly
                     return redirect(url_for('views.auth'))
                 else:
                     flash('Login Successful!', 'success')
                     return redirect(url_for('views.homes'))
             else:
                 flash('Invalid email or password', 'error')
+                return render_template('login.html', error="Invalid credentials")
 
         except Exception as error:
             print("Database error:", error)
             flash("An error occurred during login", 'error')
-            return render_template('login.html')
+            return render_template('login.html', error="Database error")
 
     return render_template('login.html')
 
