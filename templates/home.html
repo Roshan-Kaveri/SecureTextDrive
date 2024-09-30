@@ -22,7 +22,7 @@
     <span class="slider round"></span>
 </label>
 
-              <button class="login-btn" onclick="window.location.href='login.html';">Login</button>
+             <button class="login-btn" onclick="window.location.href='{{ url_for('views.login') }}';">Login</button>
             </div>
         </div>
 
@@ -53,6 +53,8 @@
                     <div class="file-card"></div>
                     <div class="file-card"></div>
                     <div class="file-card"></div>
+                    {{ auth }}
+                    {{ email }}
                 </div>
             </section>
         </main>
