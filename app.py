@@ -18,13 +18,6 @@ app.config['MAIL_USE_SSL'] = MAIL_USE_SSL
 
 mail.init_app(app)
 
-# @app.route('/')
-# def index():
-#     msg = Message('subject', sender = 'support@hmmbo.com', recipients=['mumbosmp8@gmail.com','Sriramavate2@gmail.com'])
-#     msg.body = 'OTP BOLO BHAI'
-#     mail.send(msg)
-#     return "Mail Sent, Please check the mail id"
-
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
 
