@@ -1,10 +1,10 @@
-from flask import  Blueprint , render_template , request , session, jsonify , redirect , url_for , flash
+from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for, flash
 from flask_mail import Message
 from otp_utils import generate_otp, send_otp_email, otp_storage
 from mail_config import mail
 import psycopg2
 
-views = Blueprint(__name__ , "views")
+views = Blueprint(__name__, "views")
 
 # Database connection details
 hostname = 'postgresql-ascscs.alwaysdata.net'
@@ -13,7 +13,7 @@ username = 'ascscs'
 pwd = '@7sdDgVUuhCXjD6'
 port_id = 5432
 
-#signup
+# Signup route
 @views.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -76,6 +76,7 @@ def signup():
 
     return render_template('signup.html')
 
+# Login route
 @views.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -124,6 +125,7 @@ def login():
 
     return render_template('login.html')
 
+# Forgot password route
 @views.route('/forgot_password', methods=['GET', 'POST'])
 def fpass():
     if request.method == 'POST':
@@ -139,6 +141,7 @@ def fpass():
 
     return render_template('forgot_pass.html')
 
+# OTP Generation Function
 def gen_otp(email):
     if not email:
         return jsonify({"error": "Email address is required"}), 400
@@ -153,6 +156,7 @@ def gen_otp(email):
     else:
         return jsonify({"error": "Failed to send OTP email"}), 500
 
+# OTP Authentication Route
 @views.route('/auth', methods=['GET', 'POST'])
 def auth():
     print("auth route hit")  # Check if the route is called
@@ -165,14 +169,12 @@ def auth():
 
     if request.method == 'POST':
         print("POST request received")  # Verify form submission
-        entered_otp = ''.join([
-            request.form.get('number1', '').strip(),
-            request.form.get('number2', '').strip(),
-            request.form.get('number3', '').strip(),
-            request.form.get('number4', '').strip(),
-            request.form.get('number5', '').strip(),
-            request.form.get('number6', '').strip()
-        ])
+        entered_otp = ''.join([request.form.get('number1', '').strip(),
+                                request.form.get('number2', '').strip(),
+                                request.form.get('number3', '').strip(),
+                                request.form.get('number4', '').strip(),
+                                request.form.get('number5', '').strip(),
+                                request.form.get('number6', '').strip()])
         print("Entered OTP:", entered_otp)  # Check entered OTP
 
         if len(entered_otp) != 6 or not entered_otp.isdigit():
@@ -192,9 +194,50 @@ def auth():
 
     return render_template('auth.html')
 
-
+# Home route
 @views.route('/', methods=['GET', 'POST'])
 def homes():
     email = session.get('email')
     auth = session.get('auth')
     return render_template('home.html', email=email, auth=auth)
+
+# Route to toggle 2FA
+@views.route('/toggle-2fa', methods=['POST'])
+def toggle_2fa():
+    if request.method == 'POST':
+        email = request.json.get('email')
+        auth = request.json.get('auth')
+
+        if email is None or auth is None:
+            return jsonify({"error": "Email and auth status are required"}), 400
+
+        try:
+            # Connect to the database
+            conn = psycopg2.connect(
+                host=hostname,
+                dbname=database,
+                user=username,
+                password=pwd,
+                port=port_id
+            )
+            cur = conn.cursor()
+
+            # Update the user's 2FA status in the database
+            cur.execute('UPDATE USERS SET auth = %s WHERE email = %s', (auth, email))
+            conn.commit()
+
+            cur.close()
+            conn.close()
+
+            flash('2-Factor Authentication status updated successfully!', 'success')
+            return jsonify({"message": "2FA status updated successfully!"}), 200
+
+        except Exception as error:
+            print("Database error:", error)
+            return jsonify({"error": "An error occurred while updating 2FA status"}), 500
+@views.route('/logout', methods=['GET'])
+def logout():
+    # Clear the session to log the user out
+    session.clear()
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('views.homes'))  # Redirect to the home page or login page
