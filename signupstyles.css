@@ -1,0 +1,159 @@
+/* Login Panel */
+.blue-input {
+  position: relative;
+  width: 400px;
+  height: 75px;
+  background: #dbecff;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 25px;
+  padding: 10px;
+}
+
+.inp-label {
+  position: relative;
+  height: 16px;
+  display: flex;
+  font-family: "KoHo";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000000;
+}
+
+.box {
+  align-items: center;
+  overflow-x: hidden;
+  gap: 0.5em;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.icon {
+  width: 337px;
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_btn_div {
+  margin-top: 0.7em;
+  position: relative;
+  width: 337px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 337px;
+  height: 75px;
+  background: #ffffff;
+  border: 4px solid #499eff;
+  border-radius: 57px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.btn_txt {
+  font-family: "KoHo";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 42px;
+  color: #000000;
+}
+
+.login_btn_div a {
+  font-family: "KoHo";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #000000;
+}
+
+/* Container */
+.container {
+  display: flex;
+  flex-grow: 1; /* Allows the container to grow */
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.right-panel {
+  flex: 1; /* Allows each item to grow equally */
+  display: flex; /* Enables flexbox on child items */
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+}
+.left-panel {
+  flex: 0.35; /* Allows each item to grow equally */
+  display: flex; /* Enables flexbox on child items */
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+  flex-direction: column;
+  /* Rectangle 3 */
+  width: 370px;
+  background: #aed4ff;
+}
+
+.left-panel h3 {
+  /* NEW USER? */
+  font-family: "KoHo";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 10px;
+  color: #000000;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.signup_div {
+  position: relative;
+  width: 337px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 237px;
+  height: 75px;
+  background: #ffffff;
+  border: 4px solid #499eff;
+  border-radius: 57px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.sbtn_txt {
+  font-family: "KoHo";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 42px;
+  color: #000000;
+}
+
+.empty {
+  flex: 0.9;
+}

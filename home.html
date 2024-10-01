@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Text Drive</title>
+    <link rel="stylesheet" href="../static/homepage.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="rect1">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/img.png') }}" alt="Folder Icon" width="50">
+            </div>
+            <div class="auth-options">
+                <label for="multi-auth">2-Factor Authentication</label>
+                <!-- Toggle button for multi-auth -->
+                <label class="switch">
+                    <input type="checkbox" id="multi-auth" class="toggle" {{ 'checked' if auth else '' }}>
+                    <span class="slider round"></span>
+                </label>
+
+                {% if email %}
+                    <span class="user-name">{{ email.split('@')[0] }}</span> <!-- Display user name -->
+                    <button class="logout-btn" onclick="window.location.href='{{ url_for('views.logout') }}';">Logout</button> <!-- Logout button -->
+                {% else %}
+                    <button class="login-btn" onclick="window.location.href='{{ url_for('views.login') }}';">Login</button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="header-text" style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h1 style="font-family: 'Roboto', sans-serif; font-size: 40px; color: #1e70f1;margin-left:280px; margin-top:50px">SECURE TEXT DRIVE</h1>
+                <p style="color: #1e70f1;margin-left:280px">Access your files from anywhere in the world online</p>
+            </div>
+            <img src="{{ url_for('static', filename='images/img.png') }}" alt="Folder Icon" style="display: block; margin: 0 auto; width: 300px; height: auto; max-width: 90%; max-height: 350px;">
+        </div>
+
+        <main>
+            <section class="files-section">
+                <h2 style="margin-left:30px;margin-top:100px">Saved Files</h2>
+                <div class="file-grid">
+                    <div class="file-card" id="add-new-file-btn">ADD A NEW FILE</div>
+                    <input type="file" id="file-input" style="display: none;">
+                    <div class="file-card" id="uploaded-file-name">No file selected</div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <div class="file-card"></div>
+                    <!-- Display email and auth status -->
+                    <p>Logged In Email: {{ email }}</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Function to trigger the file input dialog
+        function triggerFileInput() {
+            const fileInput = document.getElementById('file-input');
+            fileInput.click(); // Programmatically click the file input
+        }
+
+        // Function to handle the file input change
+        function handleFileUpload(event) {
+            const file = event.target.files[0]; // Get the selected file
+            const uploadedFileName = document.getElementById('uploaded-file-name');
+            if (file) {
+                uploadedFileName.innerText = file.name; // Display the file name
+            } else {
+                uploadedFileName.innerText = "No file selected"; // Reset if no file
+            }
+        }
+
+        // Attach event listeners for file upload
+        document.getElementById('add-new-file-btn').addEventListener('click', triggerFileInput);
+        document.getElementById('file-input').addEventListener('change', handleFileUpload);
+
+        // Handle 2FA toggle and send the request to the server
+        document.getElementById('multi-auth').addEventListener('change', function () {
+            const isChecked = this.checked;
+            const email = '{{ email }}';  // Access the email from the Jinja2 variable
+
+            if (!email) {
+                alert("Error: User email not found. Please log in.");
+                return;
+            }
+
+            // Send an AJAX request to toggle 2FA status
+            fetch('/toggle-2fa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ auth: isChecked, email: email }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);  // Display success message in an alert
+                } else {
+                    alert('Error: ' + (data.error || 'An unknown error occurred.'));  // Display error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);  // Handle error
+                alert('An error occurred while updating 2FA status.');
+            });
+        });
+    </script>
+</body>
+</html>
