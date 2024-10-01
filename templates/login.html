@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='loginstyles.css') }}">
-    <link rel="stylesheet" href="../static/loginstyles.css">
     <title>Login Page</title>
 </head>
 <body>
@@ -19,7 +18,8 @@
             </div>
         </div>
         <div class="right-panel">
-            <form action="/" method="POST" class="login-form">
+            <!-- Make sure to change the form action to point to the '/login' route -->
+            <form action="/login" method="POST" class="login-form">
                 <div class="box">
                     <div class="icon">
                         <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
@@ -32,16 +32,16 @@
                         <label class="inp-label">PASSWORD</label>
                         <input class="blue-input" type="password" name="password" placeholder="" required>
                     </div>
+                    <p style="margin: 0px; color: red;" >{{ error }}</p>
                     <div class="login_btn_div">
                         <button type="submit" class="login_btn">
                             <span class="btn_txt">LOGIN</span>
                         </button>
-                        <a href="./forgot_password">FORGOT PASSWORD?</a>
+                        <a href="/forgot_password">FORGOT PASSWORD?</a>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    
 </body>
 </html>

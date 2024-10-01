@@ -13,7 +13,9 @@
             <div class="empty"></div>
         </div>
         <div class="right-panel">
-            <form action="/" method="POST" class="login-form">
+            <!-- Error Message -->
+           
+            <form action="{{ url_for('views.auth') }}" method="POST" class="login-form">
                 <div class="box">
                     <div class="icon">
                         <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
@@ -28,6 +30,9 @@
                         <input class="blue-input1" type="number" name="number6" required min="0" max="9" maxlength="1" oninput="stopInput(this)" id="input6">
                     </div>
                     <div class="login_btn_div">
+                        {% if error %}
+                        <p style="margin: 0px; color: red;">{{ error }}</p>
+                    {% endif %}
                         <button type="submit" class="login_btn">
                             <span class="btn_txt">VERIFY OTP</span>
                         </button>
