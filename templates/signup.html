@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='signupstyles.css') }}">
-    <link rel="stylesheet" href="../static/signupstyles.css">
-    <title>Login Page</title>
+    <title>Signup Page</title>
 </head>
 <body>
     <div class="container">
@@ -19,7 +18,7 @@
             </div>
         </div>
         <div class="right-panel">
-            <form action="/" method="POST" class="login-form">
+            <form action="/signup" method="POST" class="login-form">
                 <div class="box">
                     <div class="icon">
                         <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
@@ -34,10 +33,10 @@
                     </div>
                     <div>
                         <label class="inp-label">CONFIRM PASSWORD</label>
-                        <input class="blue-input" type="password" name="password" placeholder="" required>
+                        <input class="blue-input" type="password" name="confirm_password" placeholder="" required>
                     </div>
                     <div class="login_btn_div">
-                        <button type="submit" class="login_btn">
+                        <button type="submit" name="action" value="signup" class="login_btn">
                             <span class="btn_txt">SIGN UP</span>
                         </button>
                     </div>
@@ -45,6 +44,5 @@
             </form>
         </div>
     </div>
-    
 </body>
 </html>
