@@ -169,3 +169,22 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+/* homepage.css */
+
+/* Existing styles... */
+
+.logout-btn {
+    background-color: #ff4d4d; /* Red color for logout */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 10px 20px; /* Padding around the button */
+    border-radius: 20px; /* Rounded corners */
+    cursor: pointer; /* Cursor changes to pointer on hover */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    margin-left: 10px; /* Space between username and button */
+}
+
+.logout-btn:hover {
+    background-color: #ff1a1a; /* Darker red on hover */
+}

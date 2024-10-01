@@ -10,31 +10,33 @@
 </head>
 <body>
     <div class="container">
-         <div class="rect1">
+        <div class="rect1">
             <div class="logo">
                 <img src="{{ url_for('static', filename='images/img.png') }}" alt="Folder Icon" width="50">
             </div>
             <div class="auth-options">
-              <label for="multi-auth">2-Factor Authentication</label>
+                <label for="multi-auth">2-Factor Authentication</label>
                 <!-- Toggle button for multi-auth -->
-<label class="switch">
-    <input type="checkbox" id="multi-auth" class="toggle">
-    <span class="slider round"></span>
-</label>
+                <label class="switch">
+                    <input type="checkbox" id="multi-auth" class="toggle" {{ 'checked' if auth else '' }}>
+                    <span class="slider round"></span>
+                </label>
 
-             <button class="login-btn" onclick="window.location.href='{{ url_for('views.login') }}';">Login</button>
+                {% if email %}
+                    <span class="user-name">{{ email.split('@')[0] }}</span> <!-- Display user name -->
+                    <button class="logout-btn" onclick="window.location.href='{{ url_for('views.logout') }}';">Logout</button> <!-- Logout button -->
+                {% else %}
+                    <button class="login-btn" onclick="window.location.href='{{ url_for('views.login') }}';">Login</button>
+                {% endif %}
             </div>
         </div>
 
         <div class="header-text" style="display: flex; align-items: center; justify-content: space-between;">
-                <div>
+            <div>
                 <h1 style="font-family: 'Roboto', sans-serif; font-size: 40px; color: #1e70f1;margin-left:280px; margin-top:50px">SECURE TEXT DRIVE</h1>
                 <p style="color: #1e70f1;margin-left:280px">Access your files from anywhere in the world online</p>
-                    </div>
-          <img src="{{ url_for('static', filename='images/img.png') }}"
-     alt="Folder Icon"
-     style="display: block; margin: 0 auto; width: 300px; height: auto; max-width: 90%; max-height: 350px;">
-
+            </div>
+            <img src="{{ url_for('static', filename='images/img.png') }}" alt="Folder Icon" style="display: block; margin: 0 auto; width: 300px; height: auto; max-width: 90%; max-height: 350px;">
         </div>
 
         <main>
@@ -53,8 +55,9 @@
                     <div class="file-card"></div>
                     <div class="file-card"></div>
                     <div class="file-card"></div>
-                    {{ auth }}
-                    {{ email }}
+                    <div class="file-card"></div>
+                    <!-- Display email and auth status -->
+                    <p>Logged In Email: {{ email }}</p>
                 </div>
             </section>
         </main>
@@ -78,9 +81,41 @@
             }
         }
 
-        // Attach event listeners
+        // Attach event listeners for file upload
         document.getElementById('add-new-file-btn').addEventListener('click', triggerFileInput);
         document.getElementById('file-input').addEventListener('change', handleFileUpload);
+
+        // Handle 2FA toggle and send the request to the server
+        document.getElementById('multi-auth').addEventListener('change', function () {
+            const isChecked = this.checked;
+            const email = '{{ email }}';  // Access the email from the Jinja2 variable
+
+            if (!email) {
+                alert("Error: User email not found. Please log in.");
+                return;
+            }
+
+            // Send an AJAX request to toggle 2FA status
+            fetch('/toggle-2fa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ auth: isChecked, email: email }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);  // Display success message in an alert
+                } else {
+                    alert('Error: ' + (data.error || 'An unknown error occurred.'));  // Display error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);  // Handle error
+                alert('An error occurred while updating 2FA status.');
+            });
+        });
     </script>
 </body>
 </html>
