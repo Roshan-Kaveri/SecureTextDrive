@@ -33,6 +33,7 @@ def signup():
                 print("Passwords do not match")
                 return render_template('signup.html', error="Passwords do not match")
 
+
             # Database insertion logic
             try:
                 print("Connecting to database...")
@@ -52,6 +53,7 @@ def signup():
                     print("Email already exists")
                     return render_template('signup.html', error="Email already exists")
 
+
                 # Insert new user into the database
                 print("Inserting user into database...")
                 insert_script = 'INSERT INTO USERS(email, password, auth) VALUES(%s, %s, %s)'
@@ -68,6 +70,7 @@ def signup():
             except Exception as error:
                 print("Database error:", error)
                 return render_template('signup.html', error="An error occurred during signup")
+
 
     return render_template('signup.html')
 
@@ -131,7 +134,6 @@ def fpass():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
-
     return render_template('forgot_pass.html')
 
 def gen_otp(email):
@@ -155,7 +157,8 @@ def auth():
     print("Session email:", email)  # Check if email is retrieved from session
 
     if not email:
-        flash('Session expired, please log in again.', 'error')
+        print('Session expired, please log in again.', 'error')
+
         return redirect(url_for('views.login'))
 
     if request.method == 'POST':
@@ -185,6 +188,7 @@ def auth():
             print("Invalid OTP")
             # Stay on the same page and pass the error message
             return render_template('auth.html', error="Invalid OTP. Please try again.")
+
 
     return render_template('auth.html')
 
