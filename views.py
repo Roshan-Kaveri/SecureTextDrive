@@ -31,8 +31,8 @@ def signup():
             # Check if passwords match
             if password != confirm_password:
                 print("Passwords do not match")
-                flash('Passwords do not match', 'error')
-                return render_template('signup.html')
+                return render_template('signup.html', error="Passwords do not match")
+
 
             # Database insertion logic
             try:
@@ -51,10 +51,8 @@ def signup():
                 cur.execute('SELECT * FROM USERS WHERE email = %s', (email,))
                 if cur.fetchone() is not None:
                     print("Email already exists")
-                    flash('Email already exists. Please choose another one.', 'error')
-                    cur.close()
-                    conn.close()
-                    return render_template('signup.html')
+                    return render_template('signup.html', error="Email already exists")
+
 
                 # Insert new user into the database
                 print("Inserting user into database...")
@@ -71,8 +69,8 @@ def signup():
 
             except Exception as error:
                 print("Database error:", error)
-                flash("An error occurred during signup", 'error')
-                return render_template('signup.html')
+                return render_template('signup.html', error="An error occurred during signup")
+
 
     return render_template('signup.html')
 
@@ -136,7 +134,6 @@ def fpass():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
-
     return render_template('forgot_pass.html')
 
 def gen_otp(email):
@@ -161,6 +158,7 @@ def auth():
 
     if not email:
         print('Session expired, please log in again.', 'error')
+
         return redirect(url_for('views.login'))
 
     if request.method == 'POST':
@@ -187,8 +185,10 @@ def auth():
             flash('OTP verified successfully!', 'success')
             return redirect(url_for('views.homes'))
         else:
-            flash('Invalid OTP, please try again.', 'error')
-            return render_template('auth.html')
+            print("Invalid OTP")
+            # Stay on the same page and pass the error message
+            return render_template('auth.html', error="Invalid OTP. Please try again.")
+
 
     return render_template('auth.html')
 
