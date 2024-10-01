@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='loginstyles.css') }}">
+    <link rel="stylesheet" href="../static/loginstyles.css">
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="empty"></div>
+        </div>
+        <div class="right-panel">
+            <!-- Error Message -->
+           
+            <form action="{{ url_for('views.auth') }}" method="POST" class="login-form">
+                <div class="box">
+                    <div class="icon">
+                        <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
+                    </div>
+                    <div>
+                        <label class="inp-label">ENTER OTP</label>
+                        <input class="blue-input1" type="number" name="number1" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input2')" id="input1">
+                        <input class="blue-input1" type="number" name="number2" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input3')" id="input2">
+                        <input class="blue-input1" type="number" name="number3" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input4')" id="input3">
+                        <input class="blue-input1" type="number" name="number4" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input5')" id="input4">
+                        <input class="blue-input1" type="number" name="number5" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input6')" id="input5">
+                        <input class="blue-input1" type="number" name="number6" required min="0" max="9" maxlength="1" oninput="stopInput(this)" id="input6">
+                    </div>
+                    <div class="login_btn_div">
+                        {% if error %}
+                        <p style="margin: 0px; color: red;">{{ error }}</p>
+                    {% endif %}
+                        <button type="submit" class="login_btn">
+                            <span class="btn_txt">VERIFY OTP</span>
+                        </button>
+                        <a href="./forgot_password">RESEND OTP </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script
+type="text/javascript"
+src="{{ url_for('static', filename='index.js')}}"
+></script>
+</body>
+</html>
