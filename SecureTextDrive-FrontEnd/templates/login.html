@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='loginstyles.css') }}">
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="empty"></div>
+            <h3>NEW USER?</h3>
+            <div class="signup_div">
+                <button onclick="window.location.href='/signup'" class="signup_btn">
+                    <span class="sbtn_txt">SIGN UP</span>
+                </button>
+            </div>
+        </div>
+        <div class="right-panel">
+            <!-- Make sure to change the form action to point to the '/login' route -->
+            <form action="/login" method="POST" class="login-form">
+                <div class="box">
+                    <div class="icon">
+                        <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
+                    </div>
+                    <div>
+                        <label class="inp-label">EMAIL</label>
+                        <input class="blue-input" type="email" name="email" placeholder="" required>
+                    </div>
+                    <div>
+                        <label class="inp-label">PASSWORD</label>
+                        <input class="blue-input" type="password" name="password" placeholder="" required>
+                    </div>
+
+                    <p style="margin: 0px; color: red;" >{{ error }}</p>
+
+                    <div class="login_btn_div">
+                        <button type="submit" class="login_btn">
+                            <span class="btn_txt">LOGIN</span>
+                        </button>
+                        <a href="/forgot_password">FORGOT PASSWORD?</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

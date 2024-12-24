@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='signupstyles.css') }}">
+    <title>Signup Page</title>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="empty"></div>
+            <h3>HAVE AN ACCOUNT??</h3>
+            <div class="signup_div">
+                <button onclick="window.location.href='/login'" class="signup_btn">
+                    <span class="sbtn_txt">LOGIN</span>
+                </button>
+            </div>
+        </div>
+        <div class="right-panel">
+
+            <form action="/signup" method="POST" class="login-form">
+                <div class="box">
+                    <div class="icon">
+                        <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
+                    </div>
+                    <div>
+                        <label class="inp-label">EMAIL</label>
+                        <input class="blue-input" type="email" name="email" placeholder="" required>
+                    </div>
+                    <div>
+                        <label class="inp-label">PASSWORD</label>
+                        <input class="blue-input" type="password" name="password" placeholder="" required>
+                    </div>
+                    <div>
+                        <label class="inp-label">CONFIRM PASSWORD</label>
+                        <input class="blue-input" type="password" name="confirm_password" placeholder="" required>
+                    </div>
+                    {% if error %}
+                    <div class="error-message" style="color: red;">{{ error }}</div>
+                {% endif %}
+                    <div class="login_btn_div">
+                        <button type="submit" name="action" value="signup" class="login_btn">
+                            <span class="btn_txt">SIGN UP</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

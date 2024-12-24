@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Text Drive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="rect1">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/img.png') }}" alt="Folder Icon" width="50">
+            </div>
+            <div class="auth-options">
+                <label for="multi-auth">Secure Mode</label>
+                <label class="switch">
+                    <input type="checkbox" id="multi-auth" class="toggle" {{ 'checked' if auth else '' }}>
+                    <span class="slider round"></span>
+                </label>
+
+                {% if email %}
+                    <span class="user-name">{{ email.split('@')[0] }}</span>
+                    <button class="logout-btn" onclick="window.location.href='{{ url_for('views.logout') }}';">Logout</button>
+                {% else %}
+                    <button class="login-btn" onclick="window.location.href='{{ url_for('views.login') }}';">Login</button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="header-text" style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h1 style="font-family: 'Roboto', sans-serif; font-size: 40px; color: #1e70f1; margin-left: 280px; margin-top: 50px">SECURE TEXT DRIVE</h1>
+                <p style="color: #1e70f1; margin-left: 280px">Access your files from anywhere in the world online</p>
+            </div>
+            <img src="{{ url_for('static', filename='images/img.png') }}" alt="Folder Icon" style="display: block; margin: 0 auto; width: 300px; height: auto; max-width: 90%; max-height: 350px;">
+        </div>
+
+        <!-- Files Section -->
+        <main>
+            <section class="files-section">
+                <h2 style="margin-left: 30px; margin-top: 100px">Saved Files</h2>
+                <div class="file-grid">
+                    <div class="file-card" id="add-new-file-btn">+</div>
+                    <input type="file" id="file-input" style="display: none;">
+
+                    {% if file_list %}
+                        {% for file in file_list %}
+                            <div class="file-card">
+                                <a href="#" onclick="previewFile('{{ file['filename'] }}')">
+                                {{ file['filename'] }}
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No files available.</p>
+                    {% endif %}
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for displaying decrypted content -->
+    <div id="decryptedContentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Decrypted Content</h2>
+            <pre id="content-display" style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border: 1px solid #ddd;"></pre>
+            <button id="downloadBtn" style="margin-top: 10px;">Download as TXT</button>
+            <button id="deleteBtn"  style="margin-top: 10px; background: red; " onclick="deleteFile(currentFilename)">Delete</button>
+        </div>
+    </div>
+
+<div id="loadingIndicator" style="display: none;">
+   <span class="loader"></span>
+</div>
+
+    <div id="notification-container" style="position: fixed; right: 20px; bottom: 20px; z-index: 1000;"></div>
+
+<script>
+    // Function to toggle 2FA
+
+    let currentFilename
+
+function showNotification(message, color = '#F44336') { // Default to green if no color is provided
+    const notification = document.createElement("div");
+    notification.classList.add("notification");
+    notification.innerText = message;
+
+    // Set the background color of the notification
+    notification.style.backgroundColor = color;
+
+    // Append the notification to the container
+    document.getElementById("notification-container").appendChild(notification);
+
+    // Automatically hide the notification after a few seconds
+    setTimeout(() => {
+        notification.classList.add("hide");
+        // Remove notification from DOM after animation
+        notification.addEventListener("transitionend", () => {
+            notification.remove();
+        });
+    }, 3000); // Adjust time as necessary
+}
+
+    function toggle2FA(authStatus, email) {
+        fetch("{{ url_for('views.toggle_2fa') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ auth: authStatus, email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showNotification(data.message, '#4CAF50');
+            } else {
+                showNotification('Error: ' + (data.error || 'An unknown error occurred.'));
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            showNotification('An error occurred while updating 2FA status.');
+        });
+    }
+
+    // Handle 2FA toggle
+    document.getElementById('multi-auth').addEventListener('change', function () {
+        const isChecked = this.checked;
+        const email = '{{ email }}';
+
+        if (email === 'None') {
+            showNotification("Error: User email not found. Please log in.");
+            return;
+        }
+
+        toggle2FA(isChecked, email);
+    });
+
+    // Function to upload file
+    function uploadFile(email, file) {
+        const reader = new FileReader();
+        document.getElementById('loadingIndicator').style.display = 'block';
+        document.body.classList.add('loading');
+
+        reader.onload = function (e) {
+            const fileContent = e.target.result;
+
+            fetch("{{ url_for('views.upload_file') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    filename: file.name,
+                    content: fileContent
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                       document.body.classList.remove('loading');
+                    throw new Error('Network response was not ok: ' + response.statusText);
+
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    showNotification(data.message, '#4CAF50');
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    document.body.classList.remove('loading');
+                    location.reload();
+                } else {
+                   document.getElementById('loadingIndicator').style.display = 'none';
+                    document.body.classList.remove('loading');
+                    showNotification('Error: ' + (data.error || 'An unknown error occurred.'));
+                }
+            })
+            .catch(error => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+                       document.body.classList.remove('loading');
+                console.error("Error:", error);
+                showNotification('An error occurred while sending the file to the backend: ' + error.message);
+            });
+        };
+
+        reader.readAsText(file);
+    }
+
+    // Trigger file input dialog
+    document.getElementById('add-new-file-btn').addEventListener('click', function () {
+        const email = '{{ email }}';
+
+        if (email === 'None') {
+            showNotification("Please log in to upload files.");
+            return;
+        }
+
+        document.getElementById('file-input').click();
+    });
+
+    // Handle file selection
+    document.getElementById('file-input').addEventListener('change', function (event) {
+        const email = '{{ email }}';
+        const file = event.target.files[0];
+
+        if (file) {
+            uploadFile(email, file);
+        }
+    });
+
+    function previewFile(filename) {
+        const email = '{{ email }}';
+
+        fetch("{{ url_for('views.preview_file') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ filename: filename })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('File not found or error occurred');
+            }
+        })
+        .then(data => {
+            const contentDisplay = document.getElementById('content-display');
+            if (contentDisplay) { // Check if element exists
+                contentDisplay.innerText = data.message;
+                document.getElementById('decryptedContentModal').style.display = "block";
+
+                 currentFilename = filename;
+
+                // Setup download button
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.onclick = function () {
+                    const blob = new Blob([data.message], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename; // Use the filename from the preview
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                };
+            } else {
+                console.error('Error: content-display element not found.');
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            showNotification('An error occurred while fetching the file: ' + error.message);
+        });
+    }
+
+
+
+function deleteFile(filename) {
+        const email = '{{ email }}'; // Retrieve email or any identifier if needed
+
+
+            fetch("{{ url_for('views.delete_file') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ filename: filename, email: email })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error occurred while deleting the file');
+                }
+            })
+            .then(data => {
+                showNotification(data.message, '#4CAF50'); // Notify the user of the success or error message
+                // Optionally, refresh the file list or update the UI
+                location.reload(); // Reload the page to refresh the file list
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showNotification('An error occurred while deleting the file: ' + error.message);
+            });
+
+    }
+
+    function closeModal() {
+        document.getElementById('decryptedContentModal').style.display = "none";
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('decryptedContentModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+</script>
+</body>
+</html>

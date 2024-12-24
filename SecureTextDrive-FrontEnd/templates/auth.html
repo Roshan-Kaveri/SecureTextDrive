@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='loginstyles.css') }}">
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="empty"></div>
+        </div>
+        <div class="right-panel">
+            <form action="{{ url_for('views.verify_otp') }}" method="POST" class="login-form"> <!-- Ensure action points to verify_otp -->
+                <div class="box">
+                    <div class="icon">
+                        <img src="https://img.icons8.com/ios-glyphs/90/000000/user--v1.png" alt="User Icon"/>
+                    </div>
+                    <div>
+                        <label class="inp-label">ENTER OTP</label>
+                        <!-- Combine the input values to a single hidden input for backend processing -->
+                        <input type="hidden" name="otp" id="combined_otp">
+                        <input class="blue-input1" type="number" name="number1" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input2')" id="input1">
+                        <input class="blue-input1" type="number" name="number2" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input3')" id="input2">
+                        <input class="blue-input1" type="number" name="number3" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input4')" id="input3">
+                        <input class="blue-input1" type="number" name="number4" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input5')" id="input4">
+                        <input class="blue-input1" type="number" name="number5" required min="0" max="9" maxlength="1" oninput="moveToNext(this, 'input6')" id="input5">
+                        <input class="blue-input1" type="number" name="number6" required min="0" max="9" maxlength="1" oninput="stopInput(this)" id="input6">
+                    </div>
+                    <div class="login_btn_div">
+                        {% if error %}
+                        <p style="margin: 0px; color: red;">{{ error }}</p>
+                        {% endif %}
+                        <button type="submit" class="login_btn">
+                            <span class="btn_txt">VERIFY OTP</span>
+                        </button>
+                        <a href="./forgot_password">RESEND OTP</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script>
+        function moveToNext(current, nextInputId) {
+            // Move to the next input field
+            if (current.value.length >= current.maxLength) {
+                document.getElementById(nextInputId).focus();
+            }
+            combineOtp();
+        }
+
+        function stopInput(current) {
+            // Prevent further input in the last field
+            if (current.value.length >= current.maxLength) {
+                current.blur(); // Remove focus
+            }
+            combineOtp();
+        }
+
+        function combineOtp() {
+            // Combine the values of all OTP input fields into a hidden input
+            const otpInputs = [
+                document.getElementById('input1').value,
+                document.getElementById('input2').value,
+                document.getElementById('input3').value,
+                document.getElementById('input4').value,
+                document.getElementById('input5').value,
+                document.getElementById('input6').value
+            ];
+            document.getElementById('combined_otp').value = otpInputs.join('');
+        }
+
+        // Handle OTP form submission via fetch
+        document.getElementById('otp-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            const combinedOtp = document.getElementById('combined_otp').value;
+
+            fetch('http://localhost:8000/api/auth', {  // Change to your backend URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ otp: combinedOtp })  // Send OTP as JSON to the backend
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Handle successful OTP verification (e.g., redirect to dashboard)
+                    window.location.href = '/dashboard'; // Redirect after success
+                } else {
+                    // Show error message on the page
+                    document.getElementById('error-message').textContent = data.message;
+                }
+            })
+            .catch(error => {
+            alert('An error occurred while verifying OTP. Please try again.');
+                document.getElementById('error-message').textContent = 'Error verifying OTP.';
+            });
+        });
+
+    </script>
+</body>
+</html>
