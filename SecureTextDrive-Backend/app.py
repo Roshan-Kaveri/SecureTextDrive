@@ -9,19 +9,21 @@ from otp_utils import generate_otp, send_otp_email, otp_storage, send_reset_emai
 import psycopg2
 import rsa
 from flask_cors import CORS
-
+from dotenv import load_dotenv
 from password_encrypter import decrypt
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = 'abcdlala'
+app.secret_key = os.getenv('SECRET_KEY')
+load_dotenv()
+
 
 # Database connection details
-hostname = 'postgresql-ascscs.alwaysdata.net'
-database = 'ascscs_securedrive'
-username = 'ascscs'
-pwd = '@7sdDgVUuhCXjD6'
-port_id = 5432
+hostname = os.getenv('DB_HOSTNAME')
+database = os.getenv('DB_NAME')
+username = os.getenv('DB_USERNAME')
+pwd = os.getenv('DB_PASSWORD')
+port_id = int(os.getenv('DB_PORT'))
 
 # Mail configuration
 app.config['MAIL_SERVER'] = MAIL_SERVER

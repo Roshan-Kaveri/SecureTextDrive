@@ -1,8 +1,13 @@
-# mail_settings.py
+import os
+from dotenv import load_dotenv
 
-MAIL_SERVER = 'smtp.hostinger.com'
-MAIL_PORT = 465
-MAIL_USERNAME = 'support@hmmbo.com'
-MAIL_PASSWORD = 'R0$hankumar'
-MAIL_USE_TLS = False
-MAIL_USE_SSL = True
+# Load environment variables from .env file
+load_dotenv()
+
+# Mail configuration
+MAIL_SERVER = os.getenv('MAIL_SERVER')
+MAIL_PORT = int(os.getenv('MAIL_PORT', 587))  # Default to 587 if not specified
+MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'False').lower() == 'true'
+MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'False').lower() == 'true'
